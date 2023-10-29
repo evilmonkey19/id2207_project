@@ -69,6 +69,7 @@ class CustomerServiceTestCase(TestCase):
             'meals': 'on',
             'drinks': 'on',
             'expected_budget': 1000,
+            'approval': 'approved',
             '_save': 'Save'
         })
         self.assertEqual(response.status_code, 302)
@@ -223,6 +224,7 @@ class SeniorCustomerServiceTestCase(TestCase):
             'meals': 'on',
             'drinks': 'on',
             'expected_budget': 2000,
+            'approval': 'approved',
             '_save': 'Save'
         })
         self.assertEqual(response.status_code, 302)
@@ -235,6 +237,68 @@ class SeniorCustomerServiceTestCase(TestCase):
         self.assertEqual(event.meals, True)
         self.assertEqual(event.drinks, True)
         self.assertEqual(event.expected_budget, 2000)
+
+    def test_user_can_reject_event(self):
+        """
+        Test that the user can reject an event
+        """
+        event: Event = Event.objects.create(
+            client_name='Test Client',
+            event_type='Test Event',
+            from_date='2022-01-01',
+            to_date='2022-01-01',
+            attendes=200,
+            expected_budget=2000,
+            _status='pending_senior_approval',
+        )
+        response: HttpResponse = self.client.post(f'/events/event/{event.pk}/change/', {
+            'record_number': '',
+            'client_name': 'Test Client 2',
+            'event_type': 'Test Event 2',
+            'from_date': '2022-01-02',
+            'to_date': '2022-01-02',
+            'attendes': 200,
+            'expected_budget': 2000,
+            'approval': 'rejected',
+            '_status': 'pending_senior_approval',
+            '_save': 'Save'
+        })
+        self.assertEqual(response.status_code, 302)
+        event.refresh_from_db()
+        self.assertEqual(event.client_name, 'Test Client 2')
+        self.assertEqual(event.event_type, 'Test Event 2')
+        self.assertEqual(event._status, 'rejected')
+
+    def test_user_can_reject_event_when_last(self):
+        """
+        Test that the user can reject an event when last
+        """
+        event: Event = Event.objects.create(
+            client_name='Test Client',
+            event_type='Test Event',
+            from_date='2022-01-01',
+            to_date='2022-01-01',
+            attendes=200,
+            expected_budget=2000,
+            _status='pending_senior_approval_last',
+        )
+        response: HttpResponse = self.client.post(f'/events/event/{event.pk}/change/', {
+            'record_number': '',
+            'client_name': 'Test Client 2',
+            'event_type': 'Test Event 2',
+            'from_date': '2022-01-02',
+            'to_date': '2022-01-02',
+            'attendes': 200,
+            'expected_budget': 2000,
+            'approval': 'rejected',
+            '_status': 'pending_senior_approval_last',
+            '_save': 'Save'
+        })
+        self.assertEqual(response.status_code, 302)
+        event.refresh_from_db()
+        self.assertEqual(event.client_name, 'Test Client 2')
+        self.assertEqual(event.event_type, 'Test Event 2')
+        self.assertEqual(event._status, 'rejected')
 
     def test_user_cannot_change_event_with_invalid_data(self):
         """
@@ -351,7 +415,11 @@ class SeniorCustomerServiceTestCase(TestCase):
         event: Event = Event.objects.create(
             client_name='Test Client',
             event_type='Test Event',
-            _status='senior_approval_last',
+            from_date='2022-01-01',
+            to_date='2022-01-01',
+            attendes=200,
+            expected_budget=2000,
+            _status='pending_senior_final_approval',
         )
         response = self.client.get(f'/events/event/{event.id}/')
         self.assertEqual(response.status_code, 302)
@@ -367,19 +435,31 @@ class SeniorCustomerServiceTestCase(TestCase):
         event: Event = Event.objects.create(
             client_name='Test Client',
             event_type='Test Event',
-            _status='senior_approval_last',
+            from_date='2022-01-01',
+            to_date='2022-01-01',
+            attendes=200,
+            expected_budget=2000,
+            _status='pending_senior_final_approval',
         )
         response: HttpResponse = self.client.post(f'/events/event/{event.id}/change/', {
             'record_number': '',
             'client_name': 'Test Client 2',
             'event_type': 'Test Event 2',
-            '_status': 'senior_approval_last',
+            'from_date': '2022-01-02',
+            'to_date': '2022-01-02',
+            'attendes': 200,
+            'expected_budget': 2000,
+            'approval': 'approved',
+            '_status': 'pending_senior_final_approval',
             '_save': 'Save'
         })
         self.assertEqual(response.status_code, 302)
         event.refresh_from_db()
         self.assertEqual(event.client_name, 'Test Client 2')
         self.assertEqual(event.event_type, 'Test Event 2')
+        self.assertEqual(event.from_date.strftime('%Y-%m-%d'), '2022-01-02')
+        self.assertEqual(event.to_date.strftime('%Y-%m-%d'), '2022-01-02')
+        self.assertEqual(event._status, 'approved')
 
 
 class FinancialManagerTestCase(TestCase):
@@ -426,7 +506,7 @@ class FinancialManagerTestCase(TestCase):
             decorations=True,
             parties=True,
             expected_budget=1000,
-            _status='finance_approval',
+            _status='pending_finance_approval',
         )
         response: HttpResponse = self.client.post(f'/events/event/{event.id}/change/', {
             'record_number': '',
@@ -438,6 +518,7 @@ class FinancialManagerTestCase(TestCase):
             'meals': 'on',
             'drinks': 'on',
             'expected_budget': 2000,
+            'approval': 'approved',
             '_save': 'Save'
         })
         self.assertEqual(response.status_code, 302)
@@ -446,6 +527,7 @@ class FinancialManagerTestCase(TestCase):
         self.assertEqual(event.event_type, 'Test Event 2')
         self.assertEqual(event.from_date.strftime('%Y-%m-%d'), '2021-01-02')
         self.assertEqual(event.to_date.strftime('%Y-%m-%d'), '2021-01-02')
+        self.assertEqual(event._status, 'pending_admin_approval')
 
     def test_user_cannot_change_event_with_invalid_data(self):
         """
@@ -460,7 +542,7 @@ class FinancialManagerTestCase(TestCase):
             decorations=True,
             parties=True,
             expected_budget=1000,
-            _status='finance_approval',
+            _status='pending_finance_approval',
         )
         response: HttpResponse = self.client.post(f'/events/event/{event.id}/change/', {
             'client_name': '',
@@ -506,7 +588,7 @@ class FinancialManagerTestCase(TestCase):
             to_date='2021-01-01',
             attendes=100,
             expected_budget=1000,
-            _status='finance_approval',
+            _status='pending_finance_approval',
         )
         response = self.client.get(f'/events/event/{event.id}/')
         self.assertEqual(response.status_code, 302)
@@ -531,7 +613,7 @@ class FinancialManagerTestCase(TestCase):
             meals=True,
             drinks=True,
             expected_budget=1000,
-            _status='finance_approval',
+            _status='pending_finance_approval',
         )
         response = self.client.post(f'/events/event/{event.id}/delete/', {
             'post': 'yes'
@@ -558,6 +640,36 @@ class FinancialManagerTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(Event.objects.count(), 0)
 
+    def test_user_can_reject_event(self):
+        """
+        Test that the user can reject an event
+        """
+        event: Event = Event.objects.create(
+            client_name='Test Client',
+            event_type='Test Event',
+            from_date='2022-01-01',
+            to_date='2022-01-01',
+            attendes=200,
+            expected_budget=2000,
+            _status='pending_finance_approval',
+        )
+        response: HttpResponse = self.client.post(f'/events/event/{event.pk}/change/', {
+            'record_number': '',
+            'client_name': 'Test Client 2',
+            'event_type': 'Test Event 2',
+            'from_date': '2022-01-02',
+            'to_date': '2022-01-02',
+            'attendes': 200,
+            'expected_budget': 2000,
+            'approval': 'rejected',
+            '_status': 'pending_finance_approval',
+            '_save': 'Save'
+        })
+        self.assertEqual(response.status_code, 302)
+        event.refresh_from_db()
+        self.assertEqual(event.client_name, 'Test Client 2')
+        self.assertEqual(event.event_type, 'Test Event 2')
+        self.assertEqual(event._status, 'rejected')
 
 class AdministrationManagerTestCase(TestCase):
     def setUp(self):
@@ -603,7 +715,7 @@ class AdministrationManagerTestCase(TestCase):
             decorations=True,
             parties=True,
             expected_budget=1000,
-            _status='admin_approval',
+            _status='pending_admin_approval',
         )
         response: HttpResponse = self.client.post(f'/events/event/{event.pk}/change/', {
             'record_number': '',
@@ -615,6 +727,7 @@ class AdministrationManagerTestCase(TestCase):
             'meals': 'on',
             'drinks': 'on',
             'expected_budget': 2000,
+            'approval': 'approved',
             '_save': 'Save'
         })
         self.assertEqual(response.status_code, 302)
@@ -637,7 +750,7 @@ class AdministrationManagerTestCase(TestCase):
             decorations=True,
             parties=True,
             expected_budget=1000,
-            _status='admin_approval',
+            _status='pending_admin_approval',
         )
         response: HttpResponse = self.client.post(f'/events/event/{event.id}/change/', {
             'client_name': '',
@@ -664,6 +777,42 @@ class AdministrationManagerTestCase(TestCase):
         self.assertEqual(event.parties, True)
         self.assertEqual(event.expected_budget, 1000)
 
+    def test_user_can_reject_event(self):
+        """
+        Test that the user can reject an event
+        """
+        event: Event = Event.objects.create(
+            client_name='Test Client',
+            event_type='Test Event',
+            from_date='2021-01-02',
+            to_date='2021-01-02',
+            attendes=200,
+            meals=True,
+            drinks=True,
+            expected_budget=2000,
+            _status='pending_admin_approval',
+        )
+        response: HttpResponse = self.client.post(f'/events/event/{event.pk}/change/', {
+            'record_number': '',
+            'client_name': 'Test Client 2',
+            'event_type': 'Test Event 2',
+            'from_date': '2021-01-02',
+            'to_date': '2021-01-02',
+            'attendes': 200,
+            'meals': 'on',
+            'drinks': 'on',
+            'expected_budget': 2000,
+            'approval': 'rejected',
+            '_save': 'Save'
+        })
+        self.assertEqual(response.status_code, 302)
+        event.refresh_from_db()
+        self.assertEqual(event.client_name, 'Test Client 2')
+        self.assertEqual(event.event_type, 'Test Event 2')
+        self.assertEqual(event.from_date.strftime('%Y-%m-%d'), '2021-01-02')
+        self.assertEqual(event.to_date.strftime('%Y-%m-%d'), '2021-01-02')
+        self.assertEqual(event._status, 'rejected')
+
     def test_user_can_search_events(self):
         """
         Test that the user can not search events
@@ -683,7 +832,7 @@ class AdministrationManagerTestCase(TestCase):
             to_date='2021-01-01',
             attendes=100,
             expected_budget=1000,
-            _status='admin_approval',
+            _status='pending_admin_approval',
         )
         response = self.client.get(f'/events/event/{event.pk}/')
         self.assertEqual(response.status_code, 302)
@@ -708,7 +857,7 @@ class AdministrationManagerTestCase(TestCase):
             meals=True,
             drinks=True,
             expected_budget=1000,
-            _status='admin_approval',
+            _status='pending_admin_approval',
         )
         response = self.client.post(f'/events/event/{event.id}/delete/', {
             'post': 'yes'

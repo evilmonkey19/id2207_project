@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django import forms
+from django.contrib.auth.models import User
 from events.models import Event
 
 class EventAdminForm(forms.ModelForm):
@@ -20,6 +21,12 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ['record_number', 'client_name']
     readonly_fields = ['_status',]
     list_filter = ['_status',]
+
+    def get_readonly_fields(self, request, obj=None):
+        user: User = request.user
+        if user.is_superuser:
+            return []
+        return self.readonly_fields
     
     def has_change_permission(self, request, obj=None):
         if obj:

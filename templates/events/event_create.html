@@ -1,7 +1,0 @@
-{% extends "base.html" %}
-
-<form action="{% url 'events:create_event' %}" method="post">
-  {% csrf_token %}
-  {{ form.ap_p }}
-  <input type="submit" value="Submit">
-</form>

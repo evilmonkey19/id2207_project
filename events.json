@@ -1,0 +1,59 @@
+[
+{
+    "model": "events.event",
+    "pk": 1,
+    "fields": {
+        "record_number": 2,
+        "client_name": "Testing",
+        "event_type": "carnival",
+        "from_date": "2023-10-28",
+        "to_date": "2023-10-28",
+        "attendes": 2,
+        "decorations": true,
+        "meals": true,
+        "drinks": false,
+        "photos_filming": false,
+        "parties": false,
+        "expected_budget": "1000.00",
+        "_status": "pending_finance_approval"
+    }
+},
+{
+    "model": "events.event",
+    "pk": 4,
+    "fields": {
+        "record_number": 5,
+        "client_name": "2131",
+        "event_type": "12323",
+        "from_date": "2023-10-28",
+        "to_date": "2023-10-28",
+        "attendes": 123,
+        "decorations": false,
+        "meals": false,
+        "drinks": false,
+        "photos_filming": false,
+        "parties": false,
+        "expected_budget": "123.00",
+        "_status": "pending_admin_approval"
+    }
+},
+{
+    "model": "events.event",
+    "pk": 5,
+    "fields": {
+        "record_number": 6,
+        "client_name": "Test Client",
+        "event_type": "Test Event",
+        "from_date": "2023-10-29",
+        "to_date": "2023-10-29",
+        "attendes": 1000,
+        "decorations": false,
+        "meals": true,
+        "drinks": true,
+        "photos_filming": false,
+        "parties": false,
+        "expected_budget": "13.00",
+        "_status": "rejected"
+    }
+}
+]

@@ -20,3 +20,5 @@ db.sqlite3-journal
 .vscode/
 
 .python-version
+
+*.sql

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'events',
     'tasks',
+    'staff',
 ]
 
 MIDDLEWARE = [

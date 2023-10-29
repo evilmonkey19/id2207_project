@@ -70,6 +70,7 @@ class ServiceManagerTestCase(TestCase):
         response = self.client.post('/tasks/task/add/', {
             'project_ref': 'Test Project',
             'description': 'Test Description',
+            'sender': self.user.pk,
             'group': self.subteam_group.pk,
             'assigned_to': self.subteam_user.pk,
             'priority': 'm',
@@ -84,6 +85,7 @@ class ServiceManagerTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.user,
             group=self.subteam_group,
             assigned_to=self.subteam_user,
             priority='m',
@@ -99,6 +101,7 @@ class ServiceManagerTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.user,
             group=self.subteam_group,
             assigned_to=self.subteam_user,
             priority='m',
@@ -106,6 +109,7 @@ class ServiceManagerTestCase(TestCase):
         response = self.client.post(f'/tasks/task/{task.pk}/change/', {
             'project_ref': 'Test Project',
             'description': 'Test Description',
+            'sender': self.user.pk,
             'group': self.subteam_group.pk,
             'assigned_to': self.subteam_user.pk,
             'priority': 'm',
@@ -121,6 +125,7 @@ class ServiceManagerTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.user,
             group=self.subteam_group,
             assigned_to=self.subteam_user,
             priority='m',
@@ -137,6 +142,9 @@ class SubteamTestCase(TestCase):
         self.user: User = create_user()
         self.group: Group = create_group('Subteam', ['change_task', 'view_task'])
         self.user.groups.add(self.group)
+        self.manager_user: User = create_user('manageruser', 'managerpass')
+        self.manager_group: Group = create_group('Service Manager', ['change_task', 'view_task', 'add_task', 'delete_task'])
+        self.manager_user.groups.add(self.manager_group)
         self.client.login(username='testuser', password='testpass')
 
     def test_user_has_not_permission_to_create_events(self):
@@ -172,6 +180,7 @@ class SubteamTestCase(TestCase):
         response = self.client.post('/tasks/task/add/', {
             'project_ref': 'Test Project',
             'description': 'Test Description',
+            'sender': self.manager_user.pk,
             'group': self.group.pk,
             'assigned_to': self.user.pk,
             'priority': 'm',
@@ -186,6 +195,7 @@ class SubteamTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.manager_user,
             group=self.group,
             assigned_to=self.user,
             priority='m',
@@ -201,6 +211,7 @@ class SubteamTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.manager_user,
             group=self.group,
             assigned_to=create_user('otheruser', 'otherpass'),
             priority='m',
@@ -216,6 +227,7 @@ class SubteamTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.manager_user,
             group=self.group,
             assigned_to=self.user,
             priority='m',
@@ -223,6 +235,7 @@ class SubteamTestCase(TestCase):
         response = self.client.post(f'/tasks/task/{task.pk}/change/', {
             'project_ref': 'Test Project',
             'description': 'Test Description',
+            'sender': self.manager_user.pk,
             'group': self.group.pk,
             'assigned_to': self.user.pk,
             'priority': 'm',
@@ -239,6 +252,7 @@ class SubteamTestCase(TestCase):
         task: Task = Task.objects.create(
             project_ref='Test Project',
             description='Test Description',
+            sender=self.manager_user,
             group=self.group,
             assigned_to=self.user,
             priority='m',

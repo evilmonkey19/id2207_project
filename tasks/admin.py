@@ -23,6 +23,7 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = (
         'project_ref',
         'assigned_to',
+        'sender',
         'priority',
         '_status',
     )
@@ -62,6 +63,8 @@ class TaskAdmin(admin.ModelAdmin):
         return super().has_change_permission(request, obj)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'sender':
+            kwargs["queryset"] = User.objects.filter(groups__name__in=['Service Manager', 'Production Manager'])
         if db_field.name == 'assigned_to':
             kwargs["queryset"] = User.objects.filter(groups__name__startswith='Subteam')
         if db_field.name == 'group':

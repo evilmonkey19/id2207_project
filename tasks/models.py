@@ -1,9 +1,13 @@
 from django.db import models
-from django.conf import settings
 
 class Task(models.Model):
     project_ref = models.CharField(max_length=50,blank=False, null=False)
     description = models.TextField()
+    sender = models.ForeignKey(
+        'auth.User',
+        on_delete=models.CASCADE,
+        related_name='sender'
+    )
     group = models.ForeignKey(
         'auth.Group',
         on_delete=models.CASCADE

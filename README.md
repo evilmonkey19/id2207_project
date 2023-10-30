@@ -8,6 +8,9 @@ This project is a part of the course ID2207 - Modern Methods in Software Enginee
 ## The project
 This project it has been using Python and the Django framework. The project is a web application that allows SEP to create financial requests, manage events, create tasks and recruit staff. For more information about the project, please refer to the BusinessForHomework.pdf file.
 
+## Try the app online
+We have deployed the app using fly.io. You can try the app online by going to the following link: https://winter-flower-3917.fly.dev. It is highly recommended to run it locally instead of using the online version as the session management is not working properly in the online version.
+
 ## To run the project
 It is recommended to run the project in a virtual environment. This is out of the scope of this README, but it can be done by following the instructions [here](https://docs.python.org/3/library/venv.html).
 ```bash

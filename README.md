@@ -34,12 +34,12 @@ python3 manage.py test
 ```
 
 ## Preloaded users
-There are multiple users already preloaded and for all of them the password is test12345. The following users have been preloaded in the database:
-* Username: admin_manager, password: test12345
-* Username: customer_service, password: test12345
-* Username: financial_manager, password: test12345
-* Username: production_manager, password: test12345
-* Username: senior_customer_service, password: test12345
-* Username: service_manager, password: test12345
-* Username: subteam_photography, password: test12345
-* Username: subteam_production, password: test12345
+There are multiple users already preloaded and for all of them the password is **test12345**. The following users have been preloaded in the database:
+* Username: **admin_manager**, password: **test12345**
+* Username: **customer_service**, password: **test12345**
+* Username: **financial_manager**, password: **test12345**
+* Username: **production_manager**, password: **test12345**
+* Username: **senior_customer_service**, password: **test12345**
+* Username: **service_manager**, password: **test12345**
+* Username: **subteam_photography**, password: **test12345**
+* Username: **subteam_production**, password: **test12345**

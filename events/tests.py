@@ -674,7 +674,7 @@ class FinancialManagerTestCase(TestCase):
 class AdministrationManagerTestCase(TestCase):
     def setUp(self):
         self.user = create_user()
-        group = create_group('Administration manager', ["change_event", "view_event"])
+        group = create_group('Administration Manager', ["change_event", "view_event"])
         self.user.groups.add(group)
         self.client.login(username='testuser', password='testpass')
 

@@ -37,7 +37,7 @@ class EventAdmin(admin.ModelAdmin):
                 return False
             elif user.groups.filter(name='Financial Manager').exists() and obj._status != 'pending_finance_approval':
                 return False
-            elif user.groups.filter(name='Administration manager').exists() and obj._status != 'pending_admin_approval':
+            elif user.groups.filter(name='Administration Manager').exists() and obj._status != 'pending_admin_approval':
                 return False
         return super().has_change_permission(request, obj)
     
